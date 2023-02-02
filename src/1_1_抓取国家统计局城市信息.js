@@ -16,7 +16,7 @@ if (oSession.HostnameIs("www.stats.gov.cn")){
 ```
 */
 (function(){
-var Year=2021;
+var Year=2022;
 var LoadMaxLevel=4;//采集几层
 var SaveName="Step1_1_StatsGov";
 var Level={
@@ -51,6 +51,7 @@ function ajax(url,True,False){
 				True(ajax.responseText
 					.replace(/[\r\n]+/g," ") //单行处理
 					.replace(/"/g,"'") //引号全部统一
+					.replace(/>\s+</g,"><") //去掉标签中间的空白
 				);
 			}else{
 				False();
@@ -172,8 +173,13 @@ function load_x_childs(itm, next){
 				if(url && url.indexOf("//")==-1 && url.indexOf("/")!=0){
 					url=city.url.substring(0,city.url.lastIndexOf("/"))+"/"+url;
 				}
-				var code=match2[3]||match2[5];
-				var name=match2[4]||match2[6];
+				var code=(match2[3]||match2[5]).trim();
+				var name=(match2[4]||match2[6]).trim();
+				if(!code||!name){
+					console.log(match2[0]);
+					err("未提取到name或code");
+					return;
+				}
 				
 				//如果是镇，上级为市，越过了区，追加一个区，code为上级code+00，保持兼容，如：东莞
 				if(itm.level==2 && match2[1]=="towntr"){

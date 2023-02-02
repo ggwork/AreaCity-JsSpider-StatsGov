@@ -18,6 +18,9 @@ document.body.append(s);
 "use strict";
 jQuery;
 
+//如果民政部的数据比统计局的旧，就设为true，忽略民政部的数据，只生成结果文件
+var MCA_IsOld=true;
+
 var SaveName="Step1_2_Merge_MCA"
 var PrevSaveName="Step1_1_StatsGov";
 
@@ -243,28 +246,33 @@ function merge(arr1,arr2,deep){
 		};
 	};
 };
-merge(cityList,list,0);
+if(!MCA_IsOld){
+	merge(cityList,list,0);
 
-if(notfinds.length){
-	console.warn("发现"+notfinds.length+"条民政部没有的统计局多余项", notfinds);
-};
-if(notfindsIgnore.length){
-	console.log("忽略"+notfindsIgnore.length+"条民政部没有的统计局多余项", notfindsIgnore);
-};
-for(var k in fixRemove){
-	if(!fixRemove[k].fix){
-		console.error("存在未被匹配的预定义fixRemove",k,fixRemove[k]);
-		throw new Error();
+	if(notfinds.length){
+		console.warn("发现"+notfinds.length+"条民政部没有的统计局多余项", notfinds);
 	};
-};
-for(var k in fixRename){
-	if(!fixRename[k].fix){
-		console.error("存在未被匹配的预定义fixRename",k,fixRename[k]);
-		throw new Error();
+	if(notfindsIgnore.length){
+		console.log("忽略"+notfindsIgnore.length+"条民政部没有的统计局多余项", notfindsIgnore);
 	};
-};
+	for(var k in fixRemove){
+		if(!fixRemove[k].fix){
+			console.error("存在未被匹配的预定义fixRemove",k,fixRemove[k]);
+			throw new Error();
+		};
+	};
+	for(var k in fixRename){
+		if(!fixRename[k].fix){
+			console.error("存在未被匹配的预定义fixRename",k,fixRename[k]);
+			throw new Error();
+		};
+	};
 
-console.log("合并完成", cityList);
+	console.log("合并完成", cityList);
+}else{
+	maxDeep=3;
+	console.warn("MCA_IsOld，丢弃民政部数据");
+}
 
 
 
