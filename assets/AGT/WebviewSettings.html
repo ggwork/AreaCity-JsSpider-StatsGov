@@ -35,6 +35,16 @@ var AppCalls={
 		};
 		return null;
 	}
+	,customSQLConfig:function(){
+		var rtv={error:"",config:{}};
+		var fn=Runtime.AppCalls.customSQLConfig;
+		if(fn){
+			fn(rtv);
+		}else{
+			rtv.error="请先选择内置脚本《[插件] 通用自定义SQL配置》并配置完成后再进行自定义SQL操作";
+		}
+		return JSON.stringify(rtv);
+	}
 	,onTransformStart:function(execName){
 		AppCalls.scope={execName:execName,tgEnable:"",tgCount:0,tgpCount:0};
 		Runtime.UpdateStatus("");
@@ -68,7 +78,7 @@ var appFixLineClick=function(){
 	alert("请先执行内置脚本 “"+$("option[value=fixline]").text()+"” 后，在来FixLine操作");
 };
 
-var LM="2022-02-19 14:57";
+var LM="2023-04-02 13:36";
 </script>
 
 <style>
@@ -290,6 +300,7 @@ select,select option{
 	
 	<option value=""></option>
 	<option value="">==== 工具集 ====</option>
+	<option value="custom_sql_config">[插件] 通用自定义SQL配置（任意数据库适配）</option>
 	<option value="geojson_level_split">[拆分] GeoJSON 按省市区将下级拆分到多个文件</option>
 	<option value="geojson_merge">[合并] GeoJSON 多个文件合并成一个文件</option>
 	
@@ -573,6 +584,10 @@ Runtime.translateGeoDisable=function(){
 	Runtime.AppCalls.translateGeos=null;
 	Runtime.UpdateStatus();
 };
+Runtime.customSQLConfigDisable=function(){
+	Runtime.AppCalls.customSQLConfig=null;
+	Runtime.UpdateStatus();
+};
 
 
 var statusMsg="";
@@ -580,9 +595,13 @@ Runtime.UpdateStatus=function(msg){
 	statusMsg=msg==null?statusMsg:(msg||"");
 	var html=[];
 	if(codeIsChange){
-		html.push('<span style="color:red">代码已修改，应用后生效</span>');
+		html.push('<span style="color:red;font-weight:bold">代码已修改，点击“应用”后生效</span>');
 	};
 	
+	var cscEnable=Runtime.AppCalls.customSQLConfig;
+	if(cscEnable){
+		html.push('<span style="color:#0b1">通用自定义SQL配置插件已启用<button onclick="Runtime.customSQLConfigDisable()">禁用</button></span>');
+	};
 	var tgEnable=Runtime.AppCalls.translateGeoEnable;
 	if(tgEnable){
 		var tgVal=tgEnable();
